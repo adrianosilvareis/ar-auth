@@ -3,14 +3,21 @@
     "start": "ts-node ./src/index.ts"
   },
   "dependencies": {
+    "express": "^4.19.2",
     "http-status-codes": "^2.3.0",
+    "inversify": "^6.0.2",
+    "reflect-metadata": "^0.2.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.4"
   },
   "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/inversify": "^2.0.33",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.12.5",
+    "@types/supertest": "^6.0.2",
     "jest": "^29.7.0",
+    "supertest": "^6.3.4",
     "ts-jest": "^29.1.2",
     "tsconfig-paths": "^4.2.0"
   }

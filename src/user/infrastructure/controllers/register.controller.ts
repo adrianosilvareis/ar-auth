@@ -1,15 +1,16 @@
-import { Controller } from "@/protocols/controllers";
-import { Request } from "@/protocols/http-request";
-import { HttpResponse, Response } from "@/protocols/http-response";
+import { Controller } from "@/protocols/http/controllers";
+import { HttpResponse, Response } from "@/protocols/http/http-response";
 import { UserMissInfo, UserNewProps } from "@/user/applications/user.props";
 import { UserRepository } from "@/user/infrastructure/repositories/user.repository";
+import { inject, injectable } from 'inversify';
 
+@injectable()
 export class RegisterController implements Controller<UserNewProps, UserMissInfo> {
 
-  constructor(private readonly repository: UserRepository) {}
+  constructor(@inject(UserRepository) private readonly repository: UserRepository) {}
 
-  handler(req: Request<UserNewProps>, res: Response<UserMissInfo>): HttpResponse<UserMissInfo> {
-    const user = this.repository.register(req.body);
-    return res.Ok(user);
+  handler(req: UserNewProps): HttpResponse<UserMissInfo> {
+    const user = this.repository.register(req);
+    return Response.Ok(user);
   }
 }
