@@ -1,11 +1,5 @@
-import './containers';
-
-import express from 'express';
+import { app } from './express.config';
 import { appUser } from './user/main/user.server';
-
-export const app = express();
-
-app.use(express.json());
 
 appUser(app);
 

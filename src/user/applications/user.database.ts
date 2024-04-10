@@ -1,6 +1,6 @@
 import { UserApplication } from '@/user/applications/user.application';
 
 export abstract class UserDatabase {
-  abstract getAll(): UserApplication[]
-  abstract add(user: UserApplication): void
+  abstract getAll(): Promise<UserApplication[]>
+  abstract add(user: UserApplication): Promise<void>
 }

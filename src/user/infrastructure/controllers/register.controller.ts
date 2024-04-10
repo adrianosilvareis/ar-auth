@@ -9,8 +9,8 @@ export class RegisterController implements Controller<UserNewProps, UserMissInfo
 
   constructor(@inject(UserRepository) private readonly repository: UserRepository) {}
 
-  handler(req: UserNewProps): HttpResponse<UserMissInfo> {
-    const user = this.repository.register(req);
+  async handler(req: UserNewProps): Promise<HttpResponse<UserMissInfo>> {
+    const user = await this.repository.register(req);
     return Response.Ok(user);
   }
 }

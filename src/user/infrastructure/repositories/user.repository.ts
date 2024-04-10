@@ -8,9 +8,9 @@ export class UserRepository {
 
   constructor(@inject(UserDatabase) private readonly db: UserDatabase) {}
 
-  register(props: UserProps): UserMissInfo {
-    const app =UserApplication.create(props);
-    this.db.add(app)
+  async register(props: UserProps): Promise<UserMissInfo> {
+    const app = UserApplication.create(props);
+    await this.db.add(app)
     return app.getMissInfo();
   }
 }

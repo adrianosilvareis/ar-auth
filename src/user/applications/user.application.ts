@@ -1,3 +1,4 @@
+import { v4 as uuid } from 'uuid';
 import { User } from "../domain/user";
 import { UserMissInfo, UserProps } from "./user.props";
 import { JWTToken } from "./user.types";
@@ -32,7 +33,7 @@ export class UserApplication extends User {
 
   static create(props: UserProps): UserApplication {
     const app = new UserApplication(props);
-    app._id = props.id ?? 'UUID'
+    app._id = props.id ?? uuid();
     return app
   }
 }

@@ -8,8 +8,8 @@ const registerController = container.get(RegisterController);
 export const appUser = (app: Express) => {
     console.info('start user configurations');
 
-    app.post('/register', (req: ExpressRequest, res: ExpressResponse) => {
-    const response = registerController.handler(req.body);
+    app.post('/register', async (req: ExpressRequest, res: ExpressResponse) => {
+    const response = await registerController.handler(req.body);
     res.status(response.status).json(response.body);
   })
 }

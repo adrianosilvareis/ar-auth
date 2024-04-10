@@ -6,11 +6,11 @@ import { injectable } from 'inversify';
 export class UserMockedDatabase implements UserDatabase{
   users: UserApplication[] = [];
 
-  getAll(): UserApplication[] {
-    return this.users;
+  async getAll(): Promise<UserApplication[]> {
+    return Promise.resolve(this.users);
   }
 
-  add(user: UserApplication) {
+  async add(user: UserApplication) {
     this.users.push(user)
   }
 }
