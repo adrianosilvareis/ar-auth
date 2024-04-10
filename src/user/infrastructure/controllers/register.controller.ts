@@ -11,6 +11,9 @@ export class RegisterController implements Controller<UserNewProps, UserMissInfo
 
   async handler(req: UserNewProps): Promise<HttpResponse<UserMissInfo>> {
     const user = await this.repository.register(req);
-    return Response.Ok(user);
+    if (user.isRight()) {
+      return Response.Ok(user.value);
+    }
+    return Response.InternalServerError(user.value.message);
   }
 }

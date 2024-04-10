@@ -22,5 +22,13 @@ export class Response {
       body
     }
   }
+
+  static InternalServerError(body: any) {
+    return {
+      status: StatusCodes.INTERNAL_SERVER_ERROR,
+      statusText: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
+      body
+    }
+  }
 }
 
