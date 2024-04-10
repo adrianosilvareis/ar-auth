@@ -3,6 +3,7 @@
     "start": "ts-node ./src/index.ts"
   },
   "dependencies": {
+    "http-status-codes": "^2.3.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.4"
   },
