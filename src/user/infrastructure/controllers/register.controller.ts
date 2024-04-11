@@ -27,7 +27,7 @@ export class RegisterController
   async handler(
     request: Either<z.ZodError, UserNewProps>
   ): Promise<HttpResponse<UserMissInfo>> {
-    this.logger.info("handler RegisterController");
+    this.logger.info("RegisterController.handler - start");
 
     if (request.isLeft()) {
       this.logger.warn("Register Controller BadRequest");
@@ -40,6 +40,7 @@ export class RegisterController
       return Response.InternalServerError(user.value.message);
     }
 
+    this.logger.info("RegisterController.handler - end");
     return Response.Ok(user.value);
   }
 }

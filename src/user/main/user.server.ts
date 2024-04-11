@@ -1,15 +1,17 @@
-import { container } from "./container";
+import { diContainer } from "@/containers";
+import "./container";
 
 import { Logger } from "@/logger/logger";
+
+import { RegisterController } from "@/user/infrastructure/controllers/register.controller";
 import {
   Express,
   Request as ExpressRequest,
   Response as ExpressResponse
 } from "express";
-import { RegisterController } from "../infrastructure/controllers/register.controller";
 
-const registerController = container.get(RegisterController);
-const logger = container.get(Logger);
+const logger = diContainer.get(Logger);
+const registerController = diContainer.get(RegisterController);
 
 export const appUser = (app: Express) => {
   logger.info("start user configurations");

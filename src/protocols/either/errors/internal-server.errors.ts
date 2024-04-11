@@ -1,8 +1,8 @@
-import { container } from "@/logger/container";
+import { diContainer } from "@/containers";
 import { Logger } from "@/logger/logger";
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
 
-const logger = container.get(Logger);
+const logger = diContainer.get(Logger);
 export class InternalServerError extends Error {
   constructor(message?: string) {
     super(message);

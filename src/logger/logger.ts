@@ -1,6 +1,15 @@
 import { injectable } from "inversify";
 import winston from "winston";
 
+const filesError = new winston.transports.File({
+  filename: "error.log",
+  level: "warn"
+});
+const filesApp = new winston.transports.File({ filename: "app.log" });
+const console = new winston.transports.Console({
+  format: winston.format.simple()
+});
+
 @injectable()
 export class Logger {
   private _logger: winston.Logger;
@@ -12,11 +21,11 @@ export class Logger {
 
   private addDevConfig(): void {
     if (process.env.NODE_ENV !== "production") {
-      this._logger.add(
-        new winston.transports.Console({
-          format: winston.format.simple()
-        })
-      );
+      this._logger.remove(filesError);
+      this._logger.remove(filesApp);
+      this._logger.add(console);
+
+      this._logger.silent = process.env.NODE_ENV === "test";
     }
   }
 
@@ -27,10 +36,7 @@ export class Logger {
         winston.format.timestamp(),
         winston.format.json()
       ),
-      transports: [
-        new winston.transports.File({ filename: "error.log", level: "warn" }),
-        new winston.transports.File({ filename: "app.log" })
-      ]
+      transports: [filesError, filesApp]
     });
   }
 

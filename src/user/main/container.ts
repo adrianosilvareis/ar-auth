@@ -1,11 +1,9 @@
-import { UserMockedDatabase } from '@/user/infrastructure/gateways/users-mocked.database';
-import { Container } from 'inversify';
-import { UserDatabase } from '../applications/user.database';
-import { RegisterController } from '../infrastructure/controllers/register.controller';
-import { UserRepository } from '../infrastructure/repositories/user.repository';
+import { diContainer } from "@/containers";
+import { UserDatabase } from "@/user/applications/user.database";
+import { RegisterController } from "@/user/infrastructure/controllers/register.controller";
+import { UserMockedDatabase } from "@/user/infrastructure/gateways/users-mocked.database";
+import { UserRepository } from "@/user/infrastructure/repositories/user.repository";
 
-export const container = new Container();
-
-container.bind(UserDatabase).to(UserMockedDatabase);
-container.bind(UserRepository).toSelf();
-container.bind(RegisterController).toSelf();
+diContainer.bind(UserDatabase).to(UserMockedDatabase);
+diContainer.bind(UserRepository).toSelf();
+diContainer.bind(RegisterController).toSelf();
