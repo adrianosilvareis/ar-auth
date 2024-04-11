@@ -1,9 +1,9 @@
-import { StatusCodes, getReasonPhrase } from 'http-status-codes';
+import { StatusCodes, getReasonPhrase } from "http-status-codes";
 
 export interface HttpResponse<K> {
   status: number;
   statusText: string;
-  body: K
+  body: K;
 }
 
 export class Response {
@@ -12,23 +12,22 @@ export class Response {
       status: StatusCodes.OK,
       statusText: getReasonPhrase(StatusCodes.OK),
       body
-    }
+    };
   }
 
-  static BadRequest<K>(body: K): HttpResponse<K> {
+  static BadRequest(body: any): HttpResponse<any> {
     return {
       status: StatusCodes.BAD_REQUEST,
       statusText: getReasonPhrase(StatusCodes.BAD_REQUEST),
       body
-    }
+    };
   }
 
-  static InternalServerError(body: any) {
+  static InternalServerError(body: any): HttpResponse<any> {
     return {
       status: StatusCodes.INTERNAL_SERVER_ERROR,
       statusText: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
       body
-    }
+    };
   }
 }
-
