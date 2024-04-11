@@ -1,3 +1,3 @@
-import 'reflect-metadata';
-import './user/main/container';
-
+import "reflect-metadata";
+import "./logger/container";
+import "./user/main/container";
