@@ -5,6 +5,7 @@ import { Controller } from "@/protocols/http/controllers";
 import { HttpResponse, Response } from "@/protocols/http/http-response";
 import { UserMissInfo, UserNewProps } from "@/user/applications/user.props";
 import { UserRepository } from "@/user/infrastructure/repositories/user.repository";
+import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import { inject, injectable } from "inversify";
 import { z } from "zod";
 
@@ -35,11 +36,19 @@ export class RegisterController
     }
 
     const user = await this.repository.register(request.value);
-    if (user.isLeft()) {
-      this.logger.warn("Register Controller - Internal Server Error");
-      return Response.InternalServerError(user.value.message);
-    }
 
+    if (user.isLeft()) {
+      const error = user.value;
+      if (error.name === getReasonPhrase(StatusCodes.BAD_REQUEST)) {
+        const errorMessage = `Register Controller BadRequest: ${error.message}`;
+        this.logger.warn(errorMessage);
+        return Response.BadRequest(errorMessage);
+      } else {
+        const errorMessage = `Register Controller InternalServerError: ${error.message}`;
+        this.logger.error(errorMessage);
+        return Response.InternalServerError(errorMessage);
+      }
+    }
     this.logger.info("RegisterController.handler - end");
     return Response.Ok(user.value);
   }
