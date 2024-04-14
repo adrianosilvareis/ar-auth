@@ -1,5 +1,6 @@
-import { app } from './express.config';
-import { appUser } from './user/main/user.server';
+import "./containers";
+import { app } from "./express.config";
+import { appUser } from "./user/main/user.server";
 
 appUser(app);
 

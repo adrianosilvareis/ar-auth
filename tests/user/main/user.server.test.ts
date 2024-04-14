@@ -1,3 +1,4 @@
+import "@/containers";
 import { app } from "@/express.config";
 import { appUser } from "@/user/main/user.server";
 import { StatusCodes } from "http-status-codes";
