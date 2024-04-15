@@ -3,7 +3,8 @@
     "dev": "ts-node ./src/server.ts",
     "start": "node dist/server.js",
     "build": "tsc",
-    "bundle": "tsup ./src/server.ts --format cjs,esm"
+    "bundle": "tsup ./src/server.ts --format cjs,esm",
+    "test": "jest"
   },
   "dependencies": {
     "@prisma/client": "5.12.1",
