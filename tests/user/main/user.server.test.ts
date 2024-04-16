@@ -1,4 +1,6 @@
 import { diContainer } from "@/containers";
+
+import { Cache } from "@/cache/cache";
 import { app } from "@/express.config";
 import { UserApplication } from "@/user/applications/user.application";
 import { UserDatabase } from "@/user/applications/user.database";
@@ -7,9 +9,11 @@ import { appUser } from "@/user/main/user.server";
 import { StatusCodes } from "http-status-codes";
 import request from "supertest";
 
-const database = diContainer.get(UserDatabase) as UserMockedDatabase;
-
 appUser(app);
+
+const database = diContainer.get(UserDatabase) as UserMockedDatabase;
+const cache = diContainer.get(Cache);
+
 const supertest = request(app);
 
 jest.mock("uuid", () => ({
@@ -17,6 +21,11 @@ jest.mock("uuid", () => ({
 }));
 
 describe("User Controller", () => {
+  beforeEach(() => {
+    cache.clear();
+    database.users = [];
+  });
+
   describe("POST /user/register", () => {
     it("should return status 200 when success", async () => {
       const data = {
@@ -117,7 +126,6 @@ describe("User Controller", () => {
         password: "12345679"
       };
 
-      database.users = [];
       const response = await supertest.post("/login").send(data);
 
       expect(response.status).toBe(StatusCodes.UNAUTHORIZED);

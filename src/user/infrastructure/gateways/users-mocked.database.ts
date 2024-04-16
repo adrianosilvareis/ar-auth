@@ -1,13 +1,16 @@
+import { Cache } from "@/cache/cache";
 import { NotFoundError } from "@/protocols/either/errors/not-found.errors";
 import { UniqueConstraintError } from "@/protocols/either/errors/unique-constraint-error.ts";
 import { UserApplication } from "@/user/applications/user.application";
 import { UserDatabase } from "@/user/applications/user.database";
 import { User } from "@/user/domain/user";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 
 @injectable()
 export class UserMockedDatabase implements UserDatabase {
   users: UserApplication[] = [];
+
+  constructor(@inject(Cache) private cache: Cache<string, UserApplication>) {}
 
   async getAll(): Promise<UserApplication[]> {
     return Promise.resolve(this.users);
@@ -22,6 +25,13 @@ export class UserMockedDatabase implements UserDatabase {
   }
 
   async findOne(params: User): Promise<UserApplication> {
+    const cacheKey = `user:${params.email}`;
+    const cachedUser = this.cache.get(cacheKey);
+
+    if (cachedUser) {
+      return cachedUser;
+    }
+
     const keys = Object.keys(params) as (keyof User)[];
 
     const user = this.users.find((user) =>
@@ -31,6 +41,10 @@ export class UserMockedDatabase implements UserDatabase {
     if (!user) {
       return Promise.reject(new NotFoundError("User not found"));
     }
+
+    const foundUser = UserApplication.create(user);
+
+    this.cache.set(cacheKey, foundUser);
 
     return Promise.resolve(user);
   }
