@@ -23,6 +23,14 @@ export class Response {
     };
   }
 
+  static Unauthorized(body: any): HttpResponse<any> {
+    return {
+      status: StatusCodes.UNAUTHORIZED,
+      statusText: getReasonPhrase(StatusCodes.UNAUTHORIZED),
+      body
+    };
+  }
+
   static InternalServerError(body: any): HttpResponse<any> {
     return {
       status: StatusCodes.INTERNAL_SERVER_ERROR,

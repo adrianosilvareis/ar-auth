@@ -16,3 +16,8 @@ export interface UserMissInfo {
   email: string;
   name: string;
 }
+
+export interface UserLoginProps {
+  email: string;
+  password: string;
+}

@@ -1,11 +1,11 @@
 import { Logger } from "@/logger/logger";
 import { ValidateWith } from "@/protocols/decorators/validate-with";
 import { Either } from "@/protocols/either/either";
+import { UniqueConstraintError } from "@/protocols/either/errors/unique-constraint-error.ts";
 import { Controller } from "@/protocols/http/controllers";
 import { HttpResponse, Response } from "@/protocols/http/http-response";
 import { UserMissInfo, UserNewProps } from "@/user/applications/user.props";
-import { UserRepository } from "@/user/infrastructure/repositories/user.repository";
-import { StatusCodes, getReasonPhrase } from "http-status-codes";
+import { UserRegisterRepository } from "@/user/applications/user.repository";
 import { inject, injectable } from "inversify";
 import { z } from "zod";
 
@@ -20,7 +20,8 @@ export class RegisterController
   implements Controller<UserNewProps, UserMissInfo>
 {
   constructor(
-    @inject(UserRepository) private readonly repository: UserRepository,
+    @inject(UserRegisterRepository)
+    private readonly repository: UserRegisterRepository,
     @inject(Logger) private readonly logger: Logger
   ) {}
 
@@ -39,14 +40,12 @@ export class RegisterController
 
     if (user.isLeft()) {
       const error = user.value;
-      if (error.name === getReasonPhrase(StatusCodes.BAD_REQUEST)) {
-        const errorMessage = `Register Controller BadRequest: ${error.message}`;
-        this.logger.warn(errorMessage);
-        return Response.BadRequest(errorMessage);
+      if (error instanceof UniqueConstraintError) {
+        this.logger.warn(error.message);
+        return Response.BadRequest(error.message);
       } else {
-        const errorMessage = `Register Controller InternalServerError: ${error.message}`;
-        this.logger.error(errorMessage);
-        return Response.InternalServerError(errorMessage);
+        this.logger.error(error.message);
+        return Response.InternalServerError(error.message);
       }
     }
     this.logger.info("RegisterController.handler - end");
