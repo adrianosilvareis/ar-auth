@@ -1,4 +1,7 @@
 import { diContainer } from "@/containers";
+
+import { EncryptHash } from "@/user//infrastructure/gateways/encrypt/encrypt-hash";
+import { Encrypt } from "@/user/applications/encrypt.protocols";
 import { UserDatabase } from "@/user/applications/user.database";
 import {
   UserLoginRepository,
@@ -6,15 +9,19 @@ import {
 } from "@/user/applications/user.repository";
 import { LoginController } from "@/user/infrastructure/controllers/login.controller";
 import { RegisterController } from "@/user/infrastructure/controllers/register.controller";
-import { UserMockedDatabase } from "@/user/infrastructure/gateways/users-mocked.database";
-import { UserPostgresDatabase } from "@/user/infrastructure/gateways/users-postgres.database";
+import { UserMockedDatabase } from "@/user/infrastructure/gateways/databases/users-mocked.database";
+import { UserPostgresDatabase } from "@/user/infrastructure/gateways/databases/users-postgres.database";
+import { EncryptMock } from "@/user/infrastructure/gateways/encrypt/encrypt-mock";
 import { UserRepository } from "@/user/infrastructure/repositories/user.repository";
 
 if (process.env.NODE_ENV === "test") {
   diContainer.bind(UserDatabase).to(UserMockedDatabase).inSingletonScope();
+  diContainer.bind(Encrypt).to(EncryptMock);
 } else {
   diContainer.bind(UserDatabase).to(UserPostgresDatabase);
+  diContainer.bind(Encrypt).to(EncryptHash);
 }
+
 diContainer.bind(UserRegisterRepository).to(UserRepository);
 diContainer.bind(UserLoginRepository).to(UserRepository);
 diContainer.bind(RegisterController).toSelf();

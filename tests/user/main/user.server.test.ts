@@ -4,7 +4,7 @@ import { Cache } from "@/cache/cache";
 import { app } from "@/express.config";
 import { UserApplication } from "@/user/applications/user.application";
 import { UserDatabase } from "@/user/applications/user.database";
-import { UserMockedDatabase } from "@/user/infrastructure/gateways/users-mocked.database";
+import { UserMockedDatabase } from "@/user/infrastructure/gateways/databases/users-mocked.database";
 import { appUser } from "@/user/main/user.server";
 import { StatusCodes } from "http-status-codes";
 import request from "supertest";
