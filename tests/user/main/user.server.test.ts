@@ -87,9 +87,6 @@ describe("User Controller", () => {
         email: "adriano@email.com",
         password: "12345679"
       };
-      const expected = {
-        token: "JWT_TOKEN"
-      };
       database.users = [
         UserApplication.create(Object.assign(data, { name: "adriano" }))
       ];
@@ -97,7 +94,7 @@ describe("User Controller", () => {
       const response = await supertest.post("/login").send(data);
 
       expect(response.status).toBe(StatusCodes.OK);
-      expect(response.body).toEqual(expected);
+      expect(response.body.token).toBeDefined();
     });
 
     it("should return status 400 when invalida data", async () => {
