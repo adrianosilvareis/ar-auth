@@ -14,6 +14,10 @@ class Left<L, R> {
   isRight(): this is Right<L, R> {
     return false;
   }
+
+  extract(): L {
+    return this.value;
+  }
 }
 
 class Right<L, R> {
@@ -29,6 +33,10 @@ class Right<L, R> {
 
   isRight(): this is Right<L, R> {
     return true;
+  }
+
+  extract(): R {
+    return this.value;
   }
 }
 

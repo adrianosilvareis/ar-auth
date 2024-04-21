@@ -1,6 +1,8 @@
+import { diContainer } from "@/containers";
 import { v4 as uuid } from "uuid";
 import { User } from "../domain/user";
 import { UserMissInfo, UserProps } from "./user.props";
+import { UserToken } from "./user.token";
 import { JWTToken } from "./user.types";
 
 export class UserApplication extends User {
@@ -19,8 +21,19 @@ export class UserApplication extends User {
     super(props.name, props.email, props.password);
   }
 
-  genToken(): void {
-    this._token = "JWT_TOKEN";
+  genToken(): JWTToken {
+    const managerToken = diContainer.get(UserToken);
+    if (this._token) {
+      const response = managerToken.refreshToken(this._token);
+      if (response.isLeft()) {
+        this._token = undefined;
+        return this.genToken();
+      }
+      this._token = response.extract();
+      return this._token;
+    }
+    this._token = managerToken.generateToken({ sub: this.id });
+    return this._token;
   }
 
   getMissInfo(): UserMissInfo {
