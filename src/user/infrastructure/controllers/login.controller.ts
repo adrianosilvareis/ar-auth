@@ -1,8 +1,8 @@
 import { Logger } from "@/logger/logger";
 import { ValidateWith } from "@/protocols/decorators/validate-with";
 import { Either } from "@/protocols/either/either";
-import { BadRequestError } from "@/protocols/either/errors/bad-request.errors";
-import { UnauthorizedError } from "@/protocols/either/errors/unauthorized.errors";
+import { BadRequestError } from "@/protocols/either/errors/bad-request.error";
+import { UnauthorizedError } from "@/protocols/either/errors/unauthorized.error";
 import { Controller } from "@/protocols/http/controllers";
 import { HttpResponse, Response } from "@/protocols/http/http-response";
 import { UserLoginProps } from "@/user/applications/user.props";

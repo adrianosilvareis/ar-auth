@@ -1,6 +1,6 @@
 import { Either } from "@/protocols/either/either";
-import { InternalServerError } from "@/protocols/either/errors/internal-server.errors";
-import { UnauthorizedError } from "@/protocols/either/errors/unauthorized.errors";
+import { InternalServerError } from "@/protocols/either/errors/internal-server.error";
+import { UnauthorizedError } from "@/protocols/either/errors/unauthorized.error";
 import { UniqueConstraintError } from "@/protocols/either/errors/unique-constraint-error.ts";
 import { UserLoginProps, UserMissInfo, UserProps } from "./user.props";
 import { JWTToken } from "./user.types";

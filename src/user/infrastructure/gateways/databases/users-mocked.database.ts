@@ -1,5 +1,5 @@
 import { Cache } from "@/cache/cache";
-import { NotFoundError } from "@/protocols/either/errors/not-found.errors";
+import { NotFoundError } from "@/protocols/either/errors/not-found.error";
 import { UniqueConstraintError } from "@/protocols/either/errors/unique-constraint-error.ts";
 import { UserApplication } from "@/user/applications/user.application";
 import { UserDatabase } from "@/user/applications/user.database";
