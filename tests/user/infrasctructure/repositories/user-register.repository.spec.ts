@@ -1,13 +1,17 @@
 import { diContainer } from "@/containers";
+import "@/logger-config";
 import "@/user/main/container";
 
 import { Cache } from "@/cache/cache";
+import { Logger } from "@/logger/logger";
 import { InternalServerError } from "@/protocols/either/errors/internal-server.error";
 import { UserApplication } from "@/user/applications/user.application";
 import { UserDatabase } from "@/user/applications/user.database";
 import { UserProps } from "@/user/applications/user.props";
 import { UserRegisterRepository } from "@/user/applications/user.repository";
 import { UserMockedDatabase } from "@/user/infrastructure/gateways/databases/users-mocked.database";
+
+Logger.pause();
 
 jest.mock("uuid", () => ({
   v4: jest.fn().mockReturnValue("mockedId")
