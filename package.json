@@ -4,7 +4,8 @@
     "start": "node dist/server.js",
     "build": "tsc",
     "bundle": "tsup ./src/server.ts --format cjs,esm",
-    "test": "jest"
+    "test": "jest",
+    "postinstall": "npx prisma generate"
   },
   "dependencies": {
     "@prisma/client": "5.12.1",
