@@ -19,36 +19,39 @@ const RequestSchema = z.object({
 export class RegisterController
   implements Controller<UserNewProps, UserMissInfo>
 {
+  private logger!: Logger;
+
   constructor(
     @inject(UserRegisterRepository)
-    private readonly repository: UserRegisterRepository,
-    @inject(Logger) private readonly logger: Logger
-  ) {}
+    private readonly repository: UserRegisterRepository
+  ) {
+    this.logger = Logger.getLogger(RegisterController);
+  }
 
   @ValidateWith(RequestSchema)
   async handler(
     request: Either<z.ZodError, UserNewProps>
   ): Promise<HttpResponse<UserMissInfo>> {
-    this.logger.info("RegisterController.handler - start");
+    this.logger.info("start register", { request });
 
     if (request.isLeft()) {
-      this.logger.warn("Register Controller BadRequest");
-      return Response.BadRequest(request.value.issues);
+      this.logger.warn("bad request", { issues: request.extract().issues });
+      return Response.BadRequest(request.extract().issues);
     }
 
-    const user = await this.repository.register(request.value);
+    const user = await this.repository.register(request.extract());
 
     if (user.isLeft()) {
       const error = user.value;
       if (error instanceof UniqueConstraintError) {
-        this.logger.warn(error.message);
+        this.logger.warn(error.message, { email: request.extract().email });
         return Response.BadRequest(error.message);
       } else {
-        this.logger.error(error.message);
+        this.logger.error(error.message, { email: request.extract().email });
         return Response.InternalServerError(error.message);
       }
     }
-    this.logger.info("RegisterController.handler - end");
+    this.logger.info("end register", { user: user.extract() });
     return Response.Ok(user.value);
   }
 }

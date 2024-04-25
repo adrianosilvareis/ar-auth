@@ -20,36 +20,39 @@ const RequestSchema = z.object({
 export class LoginController
   implements Controller<UserLoginProps, { token: JWTToken }>
 {
+  private logger!: Logger;
+
   constructor(
     @inject(UserLoginRepository)
-    private readonly repository: UserLoginRepository,
-    @inject(Logger) private readonly logger: Logger
-  ) {}
+    private readonly repository: UserLoginRepository
+  ) {
+    this.logger = Logger.getLogger(LoginController);
+  }
 
   @ValidateWith(RequestSchema)
   async handler(
     request: Either<z.ZodError, UserLoginProps>
   ): Promise<HttpResponse<{ token: JWTToken }>> {
-    this.logger.info("LoginController.handler - start");
+    this.logger.info("start login", { request });
     if (request.isLeft()) {
-      this.logger.warn("Login Controller BadRequest");
-      return Response.BadRequest(request.value.issues);
+      this.logger.warn("bad request", { issues: request.extract().issues });
+      return Response.BadRequest(request.extract().issues);
     }
-    const token = await this.repository.login(request.value);
+    const token = await this.repository.login(request.extract());
     if (token.isLeft()) {
       const error = token.value;
       if (error instanceof BadRequestError) {
-        this.logger.warn(error.message);
+        this.logger.warn(error.message, { email: request.extract().email });
         return Response.BadRequest(error.message);
       } else if (error instanceof UnauthorizedError) {
-        this.logger.warn(error.message);
+        this.logger.warn(error.message, { email: request.extract().email });
         return Response.Unauthorized("User Unauthorized");
       } else {
-        this.logger.error(error.message);
+        this.logger.error(error.message, { email: request.extract().email });
         return Response.InternalServerError(error.message);
       }
     }
-    this.logger.info("LoginController.handler - end");
+    this.logger.info("end login");
     return Response.Ok({ token: token.value });
   }
 }

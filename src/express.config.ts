@@ -1,3 +1,5 @@
+import "./logger-config";
+
 import express from "express";
 
 export const app = express();

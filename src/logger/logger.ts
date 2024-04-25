@@ -1,54 +1,70 @@
-import { injectable } from "inversify";
 import winston from "winston";
+import { LogLevel } from "./log-level.enum";
+import { SensitiveFilter } from "./sensitive-filter";
 
-const filesError = new winston.transports.File({
-  filename: "error.log",
-  level: "warn"
-});
-const filesApp = new winston.transports.File({ filename: "app.log" });
-const console = new winston.transports.Console({
-  format: winston.format.simple()
-});
-
-@injectable()
 export class Logger {
-  private _logger: winston.Logger;
+  public static blackList: string[] = [];
+  public static transporter: winston.Logger;
 
-  constructor() {
-    this._logger = this.configureLogger();
-    this.addDevConfig();
+  private name: string;
+  private static sensitive: SensitiveFilter;
+
+  constructor(name: string) {
+    this.name = name;
   }
 
-  private addDevConfig(): void {
-    if (process.env.NODE_ENV !== "production") {
-      this._logger.remove(filesError);
-      this._logger.remove(filesApp);
-      this._logger.add(console);
-
-      this._logger.silent = process.env.NODE_ENV === "test";
-    }
+  static addBlackList(blackList: string[]) {
+    Logger.blackList = blackList;
+    Logger.sensitive = new SensitiveFilter(blackList);
   }
 
-  private configureLogger() {
-    return winston.createLogger({
+  static getLogger(className: string | Function = "default"): Logger {
+    return new Logger(
+      typeof className === "string" ? className : className.name
+    );
+  }
+
+  static addTransport(transports: winston.transport[]) {
+    Logger.transporter = winston.createLogger({
       level: "info",
       format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.json()
       ),
-      transports: [filesError, filesApp]
+      transports
     });
   }
 
-  error(message: unknown) {
-    this._logger.error(message);
+  static pause() {
+    Logger.transporter.pause();
   }
 
-  warn(message: unknown) {
-    this._logger.warn(message);
+  static getSensitiveFilter(): SensitiveFilter {
+    return Logger.sensitive;
   }
 
-  info(message: unknown) {
-    this._logger.info(message);
+  error(message: string, metadata: Record<string, any> = {}) {
+    this.log(LogLevel.error, message, metadata);
+  }
+
+  info(message: string, metadata: Record<string, any> = {}) {
+    this.log(LogLevel.info, message, metadata);
+  }
+
+  warn(message: string, metadata: Record<string, any> = {}) {
+    this.log(LogLevel.warn, message, metadata);
+  }
+
+  log(
+    level: LogLevel,
+    message: string,
+    metadata: Record<string, any> = {}
+  ): void {
+    Logger.transporter.log({
+      name: this.name,
+      level,
+      message,
+      metadata: Logger.sensitive.filterSensitiveKeys(metadata)
+    });
   }
 }

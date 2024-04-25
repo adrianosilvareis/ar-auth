@@ -1,11 +1,10 @@
-import { diContainer } from "@/containers";
 import { Logger } from "@/logger/logger";
 
-const logger = diContainer.get(Logger);
+const logger = Logger.getLogger("NotFoundError");
 export class NotFoundError extends Error {
   constructor(message?: string) {
     super(message);
     this.name = "NotFoundError";
-    logger.error(message);
+    logger.error(message ?? "Not found error");
   }
 }
