@@ -33,7 +33,8 @@ describe("UserLoginRepository", () => {
       // Arrange
       const props: UserLoginProps = {
         email: "test@example.com",
-        password: "password123"
+        password: "password123",
+        remember: false
       };
 
       const user = {
@@ -50,7 +51,38 @@ describe("UserLoginRepository", () => {
 
       // Assert
       expect(result.isRight()).toBe(true);
-      expect(result.value).toBe(user.token);
+      expect(result.value).toEqual({
+        token: user.token
+      });
+    });
+
+    it("should return JWT token and refresh token when remember is provided", async () => {
+      // Arrange
+      const props: UserLoginProps = {
+        email: "test@example.com",
+        password: "password123",
+        remember: true
+      };
+
+      const user = {
+        name: "test",
+        email: "test@example.com",
+        password: "password123",
+        token: "jwtToken",
+        refreshToken: "jwtToken"
+      };
+
+      database.users = [UserApplication.create(user)];
+
+      // Act
+      const result = await userLoginRepository.login(props);
+
+      // Assert
+      expect(result.isRight()).toBe(true);
+      expect(result.value).toEqual({
+        token: user.token,
+        refreshToken: user.refreshToken
+      });
     });
 
     it("should return UnauthorizedError when password is invalid", async () => {

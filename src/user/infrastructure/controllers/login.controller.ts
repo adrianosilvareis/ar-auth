@@ -5,7 +5,10 @@ import { BadRequestError } from "@/protocols/either/errors/bad-request.error";
 import { UnauthorizedError } from "@/protocols/either/errors/unauthorized.error";
 import { Controller } from "@/protocols/http/controllers";
 import { HttpResponse, Response } from "@/protocols/http/http-response";
-import { UserLoginProps } from "@/user/applications/user.props";
+import {
+  UserLoginProps,
+  UserLoginResponse
+} from "@/user/applications/user.props";
 import { UserLoginRepository } from "@/user/applications/user.repository";
 import { JWTToken } from "@/user/applications/user.types";
 import { inject, injectable } from "inversify";
@@ -13,7 +16,8 @@ import { z } from "zod";
 
 const RequestSchema = z.object({
   email: z.string().email(),
-  password: z.string()
+  password: z.string(),
+  remember: z.boolean().default(false)
 });
 
 @injectable()
@@ -32,7 +36,7 @@ export class LoginController
   @ValidateWith(RequestSchema)
   async handler(
     request: Either<z.ZodError, UserLoginProps>
-  ): Promise<HttpResponse<{ token: JWTToken }>> {
+  ): Promise<HttpResponse<UserLoginResponse>> {
     this.logger.info("start login", { request });
     if (request.isLeft()) {
       this.logger.warn("bad request", { issues: request.extract().issues });
@@ -53,6 +57,6 @@ export class LoginController
       }
     }
     this.logger.info("end login");
-    return Response.Ok({ token: token.value });
+    return Response.Ok(token.value);
   }
 }

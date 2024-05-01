@@ -36,6 +36,11 @@ export class UserApplication extends User {
     return this._token;
   }
 
+  genRefreshToken(): JWTToken {
+    const managerToken = diContainer.get(UserToken);
+    return managerToken.generateToken({ sub: this.id }, "7d");
+  }
+
   getMissInfo(): UserMissInfo {
     return {
       id: this.id,

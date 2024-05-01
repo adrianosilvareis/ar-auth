@@ -7,6 +7,7 @@ import { UserApplication } from "@/user/applications/user.application";
 import { UserDatabase } from "@/user/applications/user.database";
 import {
   UserLoginProps,
+  UserLoginResponse,
   UserMissInfo,
   UserProps
 } from "@/user/applications/user.props";
@@ -14,7 +15,6 @@ import {
   UserLoginRepository,
   UserRegisterRepository
 } from "@/user/applications/user.repository";
-import { JWTToken } from "@/user/applications/user.types";
 import { inject, injectable } from "inversify";
 
 @injectable()
@@ -41,7 +41,9 @@ export class UserRepository
 
   async login(
     props: UserLoginProps
-  ): Promise<Either<InternalServerError | UnauthorizedError, JWTToken>> {
+  ): Promise<
+    Either<InternalServerError | UnauthorizedError, UserLoginResponse>
+  > {
     try {
       const user = await this.db.findOne({ email: props.email });
 
@@ -54,10 +56,13 @@ export class UserRepository
         return left(new UnauthorizedError("Invalid password"));
       }
 
-      const app = UserApplication.create(user);
-      app.genToken();
+      const token = user.genToken();
+      const refreshToken = props.remember ? user.genRefreshToken() : undefined;
 
-      return right(app.token as JWTToken);
+      return right({
+        token,
+        refreshToken
+      });
     } catch (error: any) {
       if (error instanceof NotFoundError) {
         return left(new UnauthorizedError(error.message));
