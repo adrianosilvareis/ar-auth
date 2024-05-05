@@ -2,20 +2,22 @@ import { Either } from "@/protocols/either/either";
 import { InternalServerError } from "@/protocols/either/errors/internal-server.error";
 import { UnauthorizedError } from "@/protocols/either/errors/unauthorized.error";
 import { UniqueConstraintError } from "@/protocols/either/errors/unique-constraint-error.ts";
-import {
-  UserLoginProps,
-  UserLoginResponse,
-  UserMissInfo,
-  UserProps
-} from "./user.props";
+import { User } from "@/user/domain/user";
+import { RegisterResponsePresentation } from "../infrastructure/presenters/register-response.presentation";
+import { UserLoginProps, UserLoginResponse } from "./user.props";
 
-export abstract class UserRegisterRepository {
+export abstract class UserRegisterUseCase {
   abstract register(
-    props: UserProps
-  ): Promise<Either<InternalServerError | UniqueConstraintError, UserMissInfo>>;
+    props: User
+  ): Promise<
+    Either<
+      InternalServerError | UniqueConstraintError,
+      RegisterResponsePresentation
+    >
+  >;
 }
 
-export abstract class UserLoginRepository {
+export abstract class UserLoginUseCase {
   abstract login(
     props: UserLoginProps
   ): Promise<

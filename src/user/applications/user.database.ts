@@ -3,5 +3,5 @@ import { UserApplication } from "@/user/applications/user.application";
 export abstract class UserDatabase {
   abstract getAll(): Promise<UserApplication[]>;
   abstract add(user: UserApplication): Promise<void>;
-  abstract findOne(params: any): Promise<UserApplication>;
+  abstract findOneByEmail(params: any): Promise<UserApplication>;
 }

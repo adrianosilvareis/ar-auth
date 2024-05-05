@@ -1,7 +1,6 @@
 import { diContainer } from "@/containers";
 import { v4 as uuid } from "uuid";
 import { User } from "../domain/user";
-import { UserMissInfo, UserProps } from "./user.props";
 import { UserToken } from "./user.token";
 import { JWTToken } from "./user.types";
 
@@ -17,7 +16,7 @@ export class UserApplication extends User {
     return this._id as string;
   }
 
-  private constructor(props: UserProps) {
+  private constructor(props: User) {
     super(props.name, props.email, props.password);
   }
 
@@ -41,17 +40,9 @@ export class UserApplication extends User {
     return managerToken.generateToken({ sub: this.id }, "7d");
   }
 
-  getMissInfo(): UserMissInfo {
-    return {
-      id: this.id,
-      name: this.name,
-      email: this.email
-    };
-  }
-
-  static create(props: UserProps): UserApplication {
+  static create(props: User, id: string = uuid()): UserApplication {
     const app = new UserApplication(props);
-    app._id = props.id ?? uuid();
+    app._id = id;
     return app;
   }
 }

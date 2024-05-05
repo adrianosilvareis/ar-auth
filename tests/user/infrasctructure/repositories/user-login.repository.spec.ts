@@ -10,7 +10,7 @@ import { UnauthorizedError } from "@/protocols/either/errors/unauthorized.error"
 import { UserApplication } from "@/user/applications/user.application";
 import { UserDatabase } from "@/user/applications/user.database";
 import { UserLoginProps } from "@/user/applications/user.props";
-import { UserLoginRepository } from "@/user/applications/user.repository";
+import { UserLoginUseCase } from "@/user/applications/user.use-cases";
 import { UserMockedDatabase } from "@/user/infrastructure/gateways/databases/users-mocked.database";
 
 Logger.pause();
@@ -21,11 +21,11 @@ jest.mock("jsonwebtoken", () => ({
 
 describe("UserLoginRepository", () => {
   const database = diContainer.get(UserDatabase) as UserMockedDatabase;
-  let userLoginRepository: UserLoginRepository;
+  let userLoginRepository: UserLoginUseCase;
 
   beforeEach(() => {
     database.users = [];
-    userLoginRepository = diContainer.get(UserLoginRepository);
+    userLoginRepository = diContainer.get(UserLoginUseCase);
     diContainer.get(Cache).clear();
   });
   describe("login", () => {
@@ -137,7 +137,7 @@ describe("UserLoginRepository", () => {
         password: "password123"
       };
 
-      database.findOne = jest
+      database.findOneByEmail = jest
         .fn()
         .mockRejectedValue(new Error("Database error"));
 

@@ -1,15 +1,16 @@
 import { diContainer } from "@/containers";
 import { UserApplication } from "@/user/applications/user.application";
-import { UserProps } from "@/user/applications/user.props";
 import { UserToken } from "@/user/applications/user.token";
+import { User } from "@/user/domain/user";
+import { RegisterResponsePresentation } from "@/user/infrastructure/presenters/register-response.presentation";
 import { MockUserToken } from "@/user/infrastructure/services/user-token/mock-user.token";
 
 describe("UserApplication", () => {
-  const userProps: UserProps = {
-    name: "John Doe",
-    email: "john@example.com",
-    password: "password123"
-  };
+  const userProps: User = new User(
+    "John Doe",
+    "john@example.com",
+    "password123"
+  );
 
   it("should create a new UserApplication instance", () => {
     const user = UserApplication.create(userProps);
@@ -31,9 +32,9 @@ describe("UserApplication", () => {
 
   it("should return user's missing information", () => {
     const user = UserApplication.create(userProps);
-    const missInfo = user.getMissInfo();
+    const response = RegisterResponsePresentation.parse(user);
 
-    expect(missInfo).toEqual({
+    expect(response).toEqual({
       id: user.id,
       name: user.name,
       email: user.email

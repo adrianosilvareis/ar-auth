@@ -4,10 +4,11 @@ import { Either } from "@/protocols/either/either";
 import { UniqueConstraintError } from "@/protocols/either/errors/unique-constraint-error.ts";
 import { Controller } from "@/protocols/http/controllers";
 import { HttpResponse, Response } from "@/protocols/http/http-response";
-import { UserMissInfo, UserNewProps } from "@/user/applications/user.props";
-import { UserRegisterRepository } from "@/user/applications/user.repository";
+import { UserRegisterUseCase } from "@/user/applications/user.use-cases";
+import { User } from "@/user/domain/user";
 import { inject, injectable } from "inversify";
 import { z } from "zod";
+import { RegisterResponsePresentation } from "../presenters/register-response.presentation";
 
 const RequestSchema = z.object({
   name: z.string(),
@@ -17,21 +18,21 @@ const RequestSchema = z.object({
 
 @injectable()
 export class RegisterController
-  implements Controller<UserNewProps, UserMissInfo>
+  implements Controller<User, RegisterResponsePresentation>
 {
   private logger!: Logger;
 
   constructor(
-    @inject(UserRegisterRepository)
-    private readonly repository: UserRegisterRepository
+    @inject(UserRegisterUseCase)
+    private readonly repository: UserRegisterUseCase
   ) {
     this.logger = Logger.getLogger(RegisterController);
   }
 
   @ValidateWith(RequestSchema)
   async handler(
-    request: Either<z.ZodError, UserNewProps>
-  ): Promise<HttpResponse<UserMissInfo>> {
+    request: Either<z.ZodError, User>
+  ): Promise<HttpResponse<RegisterResponsePresentation>> {
     this.logger.info("start register", { request });
 
     if (request.isLeft()) {

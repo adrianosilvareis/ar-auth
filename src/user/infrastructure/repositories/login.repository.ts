@@ -3,41 +3,20 @@ import { InternalServerError } from "@/protocols/either/errors/internal-server.e
 import { NotFoundError } from "@/protocols/either/errors/not-found.error";
 import { UnauthorizedError } from "@/protocols/either/errors/unauthorized.error";
 import { Encrypt } from "@/user/applications/encrypt.protocols";
-import { UserApplication } from "@/user/applications/user.application";
 import { UserDatabase } from "@/user/applications/user.database";
 import {
   UserLoginProps,
-  UserLoginResponse,
-  UserMissInfo,
-  UserProps
+  UserLoginResponse
 } from "@/user/applications/user.props";
-import {
-  UserLoginRepository,
-  UserRegisterRepository
-} from "@/user/applications/user.repository";
+import { UserLoginUseCase } from "@/user/applications/user.use-cases";
 import { inject, injectable } from "inversify";
 
 @injectable()
-export class UserRepository
-  implements UserRegisterRepository, UserLoginRepository
-{
+export class LoginRepository implements UserLoginUseCase {
   constructor(
     @inject(UserDatabase) private readonly db: UserDatabase,
     @inject(Encrypt) private readonly encrypt: Encrypt
   ) {}
-
-  async register(
-    props: UserProps
-  ): Promise<Either<InternalServerError, UserMissInfo>> {
-    try {
-      const password = await this.encrypt.hashPassword(props.password);
-      const app = UserApplication.create(Object.assign(props, { password }));
-      await this.db.add(app);
-      return right(app.getMissInfo());
-    } catch (error: any) {
-      return left(error);
-    }
-  }
 
   async login(
     props: UserLoginProps
@@ -45,7 +24,7 @@ export class UserRepository
     Either<InternalServerError | UnauthorizedError, UserLoginResponse>
   > {
     try {
-      const user = await this.db.findOne({ email: props.email });
+      const user = await this.db.findOneByEmail({ email: props.email });
 
       const isMatch = await this.encrypt.comparePasswords(
         props.password,

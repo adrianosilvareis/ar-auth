@@ -38,7 +38,7 @@ export class UserPostgresDatabase implements UserDatabase {
     }
   }
 
-  async findOne(params: any): Promise<UserApplication> {
+  async findOneByEmail(params: any): Promise<UserApplication> {
     const cacheKey = `user:${params.email}`;
     const cachedUser = this.cache.get(cacheKey);
 

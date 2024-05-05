@@ -9,8 +9,8 @@ import {
   UserLoginProps,
   UserLoginResponse
 } from "@/user/applications/user.props";
-import { UserLoginRepository } from "@/user/applications/user.repository";
 import { JWTToken } from "@/user/applications/user.types";
+import { UserLoginUseCase } from "@/user/applications/user.use-cases";
 import { inject, injectable } from "inversify";
 import { z } from "zod";
 
@@ -27,8 +27,8 @@ export class LoginController
   private logger!: Logger;
 
   constructor(
-    @inject(UserLoginRepository)
-    private readonly repository: UserLoginRepository
+    @inject(UserLoginUseCase)
+    private readonly repository: UserLoginUseCase
   ) {
     this.logger = Logger.getLogger(LoginController);
   }

@@ -24,7 +24,7 @@ export class UserMockedDatabase implements UserDatabase {
     this.users.push(user);
   }
 
-  async findOne(params: User): Promise<UserApplication> {
+  async findOneByEmail(params: User): Promise<UserApplication> {
     const cacheKey = `user:${params.email}`;
     const cachedUser = this.cache.get(cacheKey);
 

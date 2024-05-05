@@ -7,8 +7,8 @@ import { Logger } from "@/logger/logger";
 import { InternalServerError } from "@/protocols/either/errors/internal-server.error";
 import { UserApplication } from "@/user/applications/user.application";
 import { UserDatabase } from "@/user/applications/user.database";
-import { UserProps } from "@/user/applications/user.props";
-import { UserRegisterRepository } from "@/user/applications/user.repository";
+import { UserRegisterUseCase } from "@/user/applications/user.use-cases";
+import { User } from "@/user/domain/user";
 import { UserMockedDatabase } from "@/user/infrastructure/gateways/databases/users-mocked.database";
 
 Logger.pause();
@@ -19,22 +19,22 @@ jest.mock("uuid", () => ({
 
 describe("UserRegisterRepository", () => {
   const database = diContainer.get(UserDatabase) as UserMockedDatabase;
-  let userRegisterRepository: UserRegisterRepository;
+  let userRegisterRepository: UserRegisterUseCase;
 
   beforeEach(() => {
     database.users = [];
-    userRegisterRepository = diContainer.get(UserRegisterRepository);
+    userRegisterRepository = diContainer.get(UserRegisterUseCase);
     diContainer.get(Cache).clear();
   });
 
   describe("register", () => {
     it("should register a new user and return the user's miss info", async () => {
       // Arrange
-      const props: UserProps = {
-        name: "John Doe",
-        email: "john@example.com",
-        password: "password123"
-      };
+      const props: User = new User(
+        "John Doe",
+        "john@example.com",
+        "password123"
+      );
 
       // Act
       const result = await userRegisterRepository.register(props);
@@ -58,11 +58,11 @@ describe("UserRegisterRepository", () => {
 
     it("should return an InternalServerError if an error occurs during registration", async () => {
       // Arrange
-      const props: UserProps = {
-        name: "John Doe",
-        email: "john@example.com",
-        password: "password123"
-      };
+      const props: User = new User(
+        "John Doe",
+        "john@example.com",
+        "password123"
+      );
 
       const errorMessage = "Database error";
       database.add = jest
