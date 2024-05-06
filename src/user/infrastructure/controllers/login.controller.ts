@@ -30,6 +30,7 @@ export class LoginController
   constructor(
     @inject(UserLoginUseCase)
     private readonly repository: UserLoginUseCase,
+    @inject(RegisterSessionUseCase)
     private readonly session: RegisterSessionUseCase
   ) {
     this.logger = Logger.getLogger(LoginController);
