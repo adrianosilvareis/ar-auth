@@ -6,7 +6,10 @@ import {
 
 export function routerAdapter<T, K>(controller: Controller<T, K>) {
   return async (req: ExpressRequest, res: ExpressResponse) => {
-    const response = await controller.handler(req.body);
+    const body = Object.assign({}, req.body, req.query, req.params, {
+      headers: req.headers
+    });
+    const response = await controller.handler(body);
     res.status(response.status).json(response.body);
   };
 }
