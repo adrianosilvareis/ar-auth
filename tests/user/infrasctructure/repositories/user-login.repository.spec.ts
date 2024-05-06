@@ -15,10 +15,6 @@ import { UserMockedDatabase } from "@/user/infrastructure/gateways/databases/use
 
 Logger.pause();
 
-jest.mock("jsonwebtoken", () => ({
-  sign: jest.fn().mockReturnValue("jwtToken")
-}));
-
 describe("UserLoginRepository", () => {
   const database = diContainer.get(UserDatabase) as UserMockedDatabase;
   let userLoginRepository: UserLoginUseCase;
@@ -41,10 +37,12 @@ describe("UserLoginRepository", () => {
         name: "test",
         email: "test@example.com",
         password: "password123",
-        token: "jwtToken"
+        token: "mocked_token",
+        refreshToken: "mocked_token"
       };
 
-      database.users = [UserApplication.create(user)];
+      const appUser = UserApplication.create(user);
+      database.users = [appUser];
 
       // Act
       const result = await userLoginRepository.login(props);
@@ -52,7 +50,9 @@ describe("UserLoginRepository", () => {
       // Assert
       expect(result.isRight()).toBe(true);
       expect(result.value).toEqual({
-        token: user.token
+        refreshToken: undefined,
+        token: user.token,
+        userId: appUser.id
       });
     });
 
@@ -68,11 +68,11 @@ describe("UserLoginRepository", () => {
         name: "test",
         email: "test@example.com",
         password: "password123",
-        token: "jwtToken",
-        refreshToken: "jwtToken"
+        token: "mocked_token",
+        refreshToken: "mocked_token"
       };
-
-      database.users = [UserApplication.create(user)];
+      const appUser = UserApplication.create(user);
+      database.users = [appUser];
 
       // Act
       const result = await userLoginRepository.login(props);
@@ -80,6 +80,7 @@ describe("UserLoginRepository", () => {
       // Assert
       expect(result.isRight()).toBe(true);
       expect(result.value).toEqual({
+        userId: appUser.id,
         token: user.token,
         refreshToken: user.refreshToken
       });

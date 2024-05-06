@@ -40,21 +40,18 @@ export class JWTUserToken<T extends jwt.JwtPayload> implements UserToken<T> {
     }
   }
 
-  refreshToken(token: JWTToken): Either<InvalidTokenError, JWTToken> {
-    try {
-      const decodedToken = jwt.verify(token, this._secret) as {
-        [key: string]: any;
-      };
-      delete decodedToken.iat;
-      delete decodedToken.exp;
-      decodedToken.updatedAt = Date.now();
-      decodedToken.updatedTimes += decodedToken.updatedTimes;
-      const refreshedToken = jwt.sign(decodedToken, this._secret, {
-        expiresIn: "1h"
-      });
-      return right(refreshedToken);
-    } catch (error) {
-      return left(new InvalidTokenError());
+  refreshToken(
+    token: JWTToken
+  ): Either<InvalidTokenError | ExpiredTokenError, JWTToken> {
+    const decoded = this.verifyToken(token);
+
+    if (decoded.isLeft()) {
+      return left(decoded.extract());
     }
+    const payload = decoded.extract();
+    delete payload.iat;
+    delete payload.exp;
+
+    return right(this.generateToken(payload));
   }
 }

@@ -6,7 +6,7 @@ import { Encrypt } from "@/user/applications/encrypt.protocols";
 import { UserDatabase } from "@/user/applications/user.database";
 import {
   UserLoginProps,
-  UserLoginResponse
+  UserRepositoryLoginResponse
 } from "@/user/applications/user.props";
 import { UserLoginUseCase } from "@/user/applications/user.use-cases";
 import { inject, injectable } from "inversify";
@@ -21,7 +21,7 @@ export class LoginRepository implements UserLoginUseCase {
   async login(
     props: UserLoginProps
   ): Promise<
-    Either<InternalServerError | UnauthorizedError, UserLoginResponse>
+    Either<InternalServerError | UnauthorizedError, UserRepositoryLoginResponse>
   > {
     try {
       const user = await this.db.findOneByEmail({ email: props.email });
@@ -36,9 +36,10 @@ export class LoginRepository implements UserLoginUseCase {
       }
 
       const token = user.genToken();
-      const refreshToken = props.remember ? user.genRefreshToken() : undefined;
+      const refreshToken = props.remember ? user.genToken("7d") : undefined;
 
       return right({
+        userId: user.id,
         token,
         refreshToken
       });

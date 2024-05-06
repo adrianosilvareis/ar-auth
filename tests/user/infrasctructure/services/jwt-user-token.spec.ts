@@ -1,9 +1,9 @@
-import { diContainer } from "@/containers";
 import "@/user/main/container";
 
 import { ExpiredTokenError } from "@/protocols/either/errors/expired-token.error";
 import { InvalidTokenError } from "@/protocols/either/errors/invalid-token.errors";
 import { UserToken } from "@/user/applications/user.token";
+import { JWTUserToken } from "@/user/infrastructure/services/user-token/jwt-user.token";
 
 function removeJwtProps(value: any) {
   value as { [key: string]: any };
@@ -16,7 +16,7 @@ describe("JWTUserToken", () => {
   let jwtUserToken: UserToken<any>;
 
   beforeEach(() => {
-    jwtUserToken = diContainer.get(UserToken<any>);
+    jwtUserToken = new JWTUserToken();
   });
 
   it("should generate a token", () => {

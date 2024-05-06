@@ -4,7 +4,7 @@ import { UnauthorizedError } from "@/protocols/either/errors/unauthorized.error"
 import { UniqueConstraintError } from "@/protocols/either/errors/unique-constraint-error.ts";
 import { User } from "@/user/domain/user";
 import { RegisterResponsePresentation } from "../infrastructure/presenters/register-response.presentation";
-import { UserLoginProps, UserLoginResponse } from "./user.props";
+import { UserLoginProps, UserRepositoryLoginResponse } from "./user.props";
 
 export abstract class UserRegisterUseCase {
   abstract register(
@@ -21,6 +21,6 @@ export abstract class UserLoginUseCase {
   abstract login(
     props: UserLoginProps
   ): Promise<
-    Either<InternalServerError | UnauthorizedError, UserLoginResponse>
+    Either<InternalServerError | UnauthorizedError, UserRepositoryLoginResponse>
   >;
 }

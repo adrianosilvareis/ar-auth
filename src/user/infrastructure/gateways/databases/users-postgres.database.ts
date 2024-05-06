@@ -56,7 +56,7 @@ export class UserPostgresDatabase implements UserDatabase {
       return Promise.reject(new NotFoundError("User not found"));
     }
 
-    const foundUser = UserApplication.create(user);
+    const foundUser = UserApplication.create(user, user.id);
 
     this.cache.set(cacheKey, foundUser);
 
