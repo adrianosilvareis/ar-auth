@@ -5,6 +5,7 @@ import { BadRequestError } from "@/protocols/either/errors/bad-request.error";
 import { UnauthorizedError } from "@/protocols/either/errors/unauthorized.error";
 import { Controller } from "@/protocols/http/controllers";
 import { HttpResponse, Response } from "@/protocols/http/http-response";
+import { RegisterSessionUseCase } from "@/sessions/applications/session.use-cases";
 import {
   UserLoginProps,
   UserLoginResponse
@@ -28,7 +29,8 @@ export class LoginController
 
   constructor(
     @inject(UserLoginUseCase)
-    private readonly repository: UserLoginUseCase
+    private readonly repository: UserLoginUseCase,
+    private readonly session: RegisterSessionUseCase
   ) {
     this.logger = Logger.getLogger(LoginController);
   }
@@ -56,7 +58,22 @@ export class LoginController
         return Response.InternalServerError(error.message);
       }
     }
+    const value = token.extract();
+
+    const session = await this.session.registerSession(
+      value.userId,
+      value.token,
+      value.refreshToken ?? ""
+    );
+
+    if (session.isLeft()) {
+      this.logger.error(session.extract().message, {
+        email: request.extract().email
+      });
+      return Response.InternalServerError(session.extract().message);
+    }
+
     this.logger.info("end login");
-    return Response.Ok(token.value);
+    return Response.Ok({ token: value.token });
   }
 }
