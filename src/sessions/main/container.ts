@@ -5,6 +5,7 @@ import {
   RegisterSessionUseCase,
   VerifySessionUseCase
 } from "../applications/session.use-cases";
+import { RefreshTokenController } from "../infrastructure/controllers/refresh-token.controller";
 import { SessionMockedDatabase } from "../infrastructure/gateways/databases/sessions-mocked.database";
 import { SessionPostgresDatabase } from "../infrastructure/gateways/databases/sessions-postgres.database";
 import { RegisterSessionRepository } from "../infrastructure/repositories/register-session.repository";
@@ -21,3 +22,4 @@ if (process.env.NODE_ENV === "test") {
 
 diContainer.bind(RegisterSessionUseCase).to(RegisterSessionRepository);
 diContainer.bind(VerifySessionUseCase).to(VerifySessionRepository);
+diContainer.bind(RefreshTokenController).toSelf();

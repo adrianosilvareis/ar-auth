@@ -16,7 +16,6 @@ import { LoginRepository } from "@/user/infrastructure/repositories/login.reposi
 import { RegisterRepository } from "@/user/infrastructure/repositories/register.repository";
 import { EncryptMock } from "@/user/infrastructure/services/encrypt/encrypt-mock";
 import { JWTUserToken } from "@/user/infrastructure/services/user-token/jwt-user.token";
-import { RefreshTokenController } from "../infrastructure/controllers/refresh-token.controller";
 import { MockUserToken } from "../infrastructure/services/user-token/mock-user.token";
 
 if (process.env.NODE_ENV === "test") {
@@ -31,6 +30,5 @@ if (process.env.NODE_ENV === "test") {
 
 diContainer.bind(UserRegisterUseCase).to(RegisterRepository);
 diContainer.bind(UserLoginUseCase).to(LoginRepository);
-diContainer.bind(RefreshTokenController).toSelf();
 diContainer.bind(RegisterController).toSelf();
 diContainer.bind(LoginController).toSelf();

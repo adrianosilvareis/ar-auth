@@ -1,11 +1,14 @@
 import "@/logger-config";
 import "@/sessions/main/container";
 
+import { Logger } from "@/logger/logger";
 import { right } from "@/protocols/either/either";
 import { InternalServerError } from "@/protocols/either/errors/internal-server.error";
 import { SessionDatabase } from "@/sessions/applications/session.database";
 import { RegisterSessionRepository } from "@/sessions/infrastructure/repositories/register-session.repository";
 import { JWTToken } from "@/user/applications/user.types";
+
+Logger.pause();
 
 describe("RegisterSessionRepository", () => {
   let repository: RegisterSessionRepository;

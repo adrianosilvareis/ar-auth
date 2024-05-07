@@ -1,10 +1,10 @@
 import "./containers";
-import { app } from "./express.config";
+import { app, router } from "./express.config";
 import { appSession } from "./sessions/main/session.server";
 import { appUser } from "./user/main/user.server";
 
-appSession(app);
-appUser(app);
+app.use("/session", appSession(router));
+app.use("/user", appUser(router));
 
 const $PORT = process.env.PORT || 5000;
 

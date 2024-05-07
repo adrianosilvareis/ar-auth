@@ -6,9 +6,12 @@ import { ExpiredTokenError } from "@/protocols/either/errors/expired-token.error
 import { InternalServerError } from "@/protocols/either/errors/internal-server.error";
 import { InvalidTokenError } from "@/protocols/either/errors/invalid-token.errors";
 
+import { Logger } from "@/logger/logger";
 import { SessionDatabase } from "@/sessions/applications/session.database";
 import { VerifySessionRepository } from "@/sessions/infrastructure/repositories/verify-session.repository";
 import { UserApplication } from "@/user/applications/user.application";
+
+Logger.pause();
 
 describe("VerifySessionRepository", () => {
   let repository: VerifySessionRepository;
