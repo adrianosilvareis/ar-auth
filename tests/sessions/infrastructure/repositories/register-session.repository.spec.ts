@@ -28,11 +28,13 @@ describe("RegisterSessionRepository", () => {
       const userId = "user123";
       const token: JWTToken = "token123";
       const refreshToken: JWTToken = "refreshToken123";
+      const userAgent = "myDeviceName";
 
       const result = await repository.registerSession(
         userId,
         token,
-        refreshToken
+        refreshToken,
+        userAgent
       );
 
       expect(sessionDatabaseMock.dropActiveSessions).toHaveBeenCalledWith(
@@ -41,7 +43,8 @@ describe("RegisterSessionRepository", () => {
       expect(sessionDatabaseMock.createNewSessions).toHaveBeenCalledWith(
         userId,
         token,
-        refreshToken
+        refreshToken,
+        userAgent
       );
       expect(result).toEqual(right(undefined));
     });
@@ -50,6 +53,7 @@ describe("RegisterSessionRepository", () => {
       const userId = "user123";
       const token: JWTToken = "token123";
       const refreshToken: JWTToken = "refreshToken123";
+      const userAgent = "myDeviceName";
 
       const errorMessage = "Database error";
       sessionDatabaseMock.createNewSessions = jest
@@ -59,7 +63,8 @@ describe("RegisterSessionRepository", () => {
       const result = await repository.registerSession(
         userId,
         token,
-        refreshToken
+        refreshToken,
+        userAgent
       );
 
       expect(result.isLeft()).toBe(true);

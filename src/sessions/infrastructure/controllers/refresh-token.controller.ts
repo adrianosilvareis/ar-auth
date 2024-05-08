@@ -1,17 +1,16 @@
 import { Logger } from "@/logger/logger";
-import { Controller } from "@/protocols/http/controllers";
+import { Controller, IHeaders } from "@/protocols/http/controllers";
 import { HttpResponse, Response } from "@/protocols/http/http-response";
 import {
   RegisterSessionUseCase,
   VerifySessionUseCase
 } from "@/sessions/applications/session.use-cases";
 import { JWTToken } from "@/user/applications/user.types";
-import { User } from "@/user/domain/user";
 import { inject, injectable } from "inversify";
 
 @injectable()
 export class RefreshTokenController
-  implements Controller<User, { token: JWTToken }>
+  implements Controller<IHeaders, { token: JWTToken }>
 {
   private logger!: Logger;
 
@@ -24,16 +23,19 @@ export class RefreshTokenController
     this.logger = Logger.getLogger(RefreshTokenController);
   }
 
-  async handler(request: any): Promise<HttpResponse<{ token: JWTToken }>> {
-    this.logger.info("start RefreshToken", { request });
+  async handler(req: IHeaders): Promise<HttpResponse<{ token: JWTToken }>> {
+    this.logger.info("start RefreshToken", { request: req });
 
-    if (request.headers.authorization === undefined) {
+    const request = req.headers;
+
+    if (request?.authorization === undefined) {
       return Response.Unauthorized("Unauthorized");
     }
 
-    const [, authorization] = request.headers.authorization.split(" ");
+    const userAgent = request["user-agent"] as string;
+    const [, authorization] = request.authorization.split(" ");
 
-    const user = await this.session.verifySession(authorization);
+    const user = await this.session.verifySession(authorization, userAgent);
 
     if (user.isLeft()) {
       return Response.Unauthorized(user.extract());
@@ -49,7 +51,8 @@ export class RefreshTokenController
     const session = await this.register.registerSession(
       user.extract().id,
       token.extract(),
-      refreshToken
+      refreshToken,
+      userAgent
     );
 
     if (session.isLeft()) {

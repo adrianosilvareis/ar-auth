@@ -1,8 +1,14 @@
-import { ZodSchema } from "zod";
+import { ZodSchema, z } from "zod";
 import { Either, left, right } from "../either/either";
 
+const HeaderSchema = z.object({
+  headers: z.object({
+    "user-agent": z.string()
+  })
+});
+
 function validate(schema: ZodSchema<any>, data: any): Either<any, any> {
-  const response = schema.safeParse(data);
+  const response = schema.and(HeaderSchema).safeParse(data);
   return response.success ? right(response.data) : left(response.error);
 }
 

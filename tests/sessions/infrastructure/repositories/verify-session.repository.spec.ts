@@ -29,6 +29,8 @@ describe("VerifySessionRepository", () => {
   describe("verifySession", () => {
     it("should return user application when session is valid", async () => {
       const token = "valid-token";
+      const userAgent = "my-device-name";
+
       const session = {
         userId: "user-id",
         isExpired: jest.fn().mockReturnValue(false)
@@ -38,49 +40,65 @@ describe("VerifySessionRepository", () => {
 
       sessionDatabase.findSession = jest.fn().mockResolvedValue(session);
 
-      const result = await repository.verifySession(token);
+      const result = await repository.verifySession(token, userAgent);
 
       expect(result).toEqual(right(expectedUser));
-      expect(sessionDatabase.findSession).toHaveBeenCalledWith(token);
+      expect(sessionDatabase.findSession).toHaveBeenCalledWith(
+        token,
+        userAgent
+      );
     });
 
     it("should return InvalidTokenError when session is not found", async () => {
       const token = "invalid-token";
+      const userAgent = "my-device-name";
 
       sessionDatabase.findSession = jest.fn().mockResolvedValue(null);
 
-      const result = await repository.verifySession(token);
+      const result = await repository.verifySession(token, userAgent);
 
       expect(result).toEqual(left(new InvalidTokenError()));
-      expect(sessionDatabase.findSession).toHaveBeenCalledWith(token);
+      expect(sessionDatabase.findSession).toHaveBeenCalledWith(
+        token,
+        userAgent
+      );
     });
 
     it("should return ExpiredTokenError when session is expired", async () => {
       const token = "expired-token";
+      const userAgent = "my-device-name";
+
       const session = {
         isExpired: jest.fn().mockReturnValue(true)
       };
 
       sessionDatabase.findSession = jest.fn().mockResolvedValue(session);
 
-      const result = await repository.verifySession(token);
+      const result = await repository.verifySession(token, userAgent);
 
       expect(result).toEqual(left(new ExpiredTokenError()));
-      expect(sessionDatabase.findSession).toHaveBeenCalledWith(token);
+      expect(sessionDatabase.findSession).toHaveBeenCalledWith(
+        token,
+        userAgent
+      );
     });
 
     it("should return InternalServerError when an error occurs", async () => {
       const token = "error-token";
+      const userAgent = "my-device-name";
       const errorMessage = "Internal server error";
 
       sessionDatabase.findSession = jest
         .fn()
         .mockRejectedValue(new Error(errorMessage));
 
-      const result = await repository.verifySession(token);
+      const result = await repository.verifySession(token, userAgent);
 
       expect(result).toEqual(left(new InternalServerError(errorMessage)));
-      expect(sessionDatabase.findSession).toHaveBeenCalledWith(token);
+      expect(sessionDatabase.findSession).toHaveBeenCalledWith(
+        token,
+        userAgent
+      );
     });
   });
 });

@@ -9,13 +9,15 @@ export abstract class RegisterSessionUseCase {
   abstract registerSession(
     userId: string,
     token: JWTToken,
-    refreshToken: JWTToken
+    refreshToken: JWTToken,
+    userAgent: string
   ): Promise<Either<InternalServerError, void>>;
 }
 
 export abstract class VerifySessionUseCase {
   abstract verifySession(
-    token: string
+    token: string,
+    userAgent: string
   ): Promise<
     Either<
       InternalServerError | InvalidTokenError | ExpiredTokenError,

@@ -5,8 +5,12 @@ export abstract class SessionDatabase {
   abstract createNewSessions(
     userId: string,
     token: string,
-    refreshToken: string
+    refreshToken: string,
+    userAgent: string
   ): Promise<void>;
 
-  abstract findSession(token: string): Promise<SessionApplication | null>;
+  abstract findSession(
+    token: string,
+    userAgent: string
+  ): Promise<SessionApplication | null>;
 }

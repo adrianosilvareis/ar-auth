@@ -12,11 +12,12 @@ export class RegisterSessionRepository implements RegisterSessionUseCase {
   async registerSession(
     userId: string,
     token: JWTToken,
-    refreshToken: JWTToken
+    refreshToken: JWTToken,
+    userAgent: string
   ): Promise<Either<InternalServerError, void>> {
     try {
       await this.db.dropActiveSessions(userId);
-      await this.db.createNewSessions(userId, token, refreshToken);
+      await this.db.createNewSessions(userId, token, refreshToken, userAgent);
       return right(undefined);
     } catch (error: any) {
       return left(new InternalServerError(error.message));

@@ -24,4 +24,5 @@ model Session {
   expires      DateTime
   createdAt    DateTime @default(now())
   active       Boolean  @default(true)
+  userAgent    String   @default("")
 }

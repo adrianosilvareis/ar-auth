@@ -35,7 +35,8 @@ export class SessionMockedDatabase implements SessionDatabase {
   createNewSessions(
     userId: string,
     token: string,
-    refreshToken: string
+    refreshToken: string,
+    userAgent: string
   ): Promise<void> {
     this.sessions.push(
       SessionApplication.create({
@@ -45,6 +46,7 @@ export class SessionMockedDatabase implements SessionDatabase {
         refreshToken,
         expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
         active: true,
+        userAgent,
         createdAt: new Date()
       })
     );

@@ -21,22 +21,28 @@ export class SessionPostgresDatabase implements SessionDatabase {
   async createNewSessions(
     userId: string,
     token: string,
-    refreshToken: string
+    refreshToken: string,
+    userAgent: string
   ): Promise<void> {
     await this.connect.session.create({
       data: {
         token,
         refreshToken,
         userId,
-        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7)
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+        userAgent
       }
     });
   }
 
-  async findSession(token: string): Promise<SessionApplication | null> {
+  async findSession(
+    token: string,
+    userAgent: string
+  ): Promise<SessionApplication | null> {
     const session = await this.connect.session.findFirst({
       where: {
         token,
+        userAgent,
         active: true
       }
     });

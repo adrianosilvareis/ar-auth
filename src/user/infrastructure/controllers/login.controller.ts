@@ -3,7 +3,7 @@ import { ValidateWith } from "@/protocols/decorators/validate-with";
 import { Either } from "@/protocols/either/either";
 import { BadRequestError } from "@/protocols/either/errors/bad-request.error";
 import { UnauthorizedError } from "@/protocols/either/errors/unauthorized.error";
-import { Controller } from "@/protocols/http/controllers";
+import { Controller, IHeaders } from "@/protocols/http/controllers";
 import { HttpResponse, Response } from "@/protocols/http/http-response";
 import { RegisterSessionUseCase } from "@/sessions/applications/session.use-cases";
 import {
@@ -23,7 +23,7 @@ const RequestSchema = z.object({
 
 @injectable()
 export class LoginController
-  implements Controller<UserLoginProps, { token: JWTToken }>
+  implements Controller<UserLoginProps & IHeaders, { token: JWTToken }>
 {
   private logger!: Logger;
 
@@ -38,38 +38,42 @@ export class LoginController
 
   @ValidateWith(RequestSchema)
   async handler(
-    request: Either<z.ZodError, UserLoginProps>
+    req: Either<z.ZodError, UserLoginProps & IHeaders>
   ): Promise<HttpResponse<UserLoginResponse>> {
-    this.logger.info("start login", { request });
-    if (request.isLeft()) {
-      this.logger.warn("bad request", { issues: request.extract().issues });
-      return Response.BadRequest(request.extract().issues);
+    this.logger.info("start login", { request: req });
+    if (req.isLeft()) {
+      this.logger.warn("bad request", { issues: req.extract().issues });
+      return Response.BadRequest(req.extract().issues);
     }
-    const token = await this.repository.login(request.extract());
+
+    const request = req.extract();
+    const token = await this.repository.login(request);
     if (token.isLeft()) {
       const error = token.value;
       if (error instanceof BadRequestError) {
-        this.logger.warn(error.message, { email: request.extract().email });
+        this.logger.warn(error.message, { email: request.email });
         return Response.BadRequest(error.message);
       } else if (error instanceof UnauthorizedError) {
-        this.logger.warn(error.message, { email: request.extract().email });
+        this.logger.warn(error.message, { email: request.email });
         return Response.Unauthorized("User Unauthorized");
       } else {
-        this.logger.error(error.message, { email: request.extract().email });
+        this.logger.error(error.message, { email: request.email });
         return Response.InternalServerError(error.message);
       }
     }
     const value = token.extract();
 
+    const userAgent = request.headers?.["user-agent"] as string;
     const session = await this.session.registerSession(
       value.userId,
       value.token,
-      value.refreshToken ?? ""
+      value.refreshToken ?? "",
+      userAgent
     );
 
     if (session.isLeft()) {
       this.logger.error(session.extract().message, {
-        email: request.extract().email
+        email: request.email
       });
       return Response.InternalServerError(session.extract().message);
     }

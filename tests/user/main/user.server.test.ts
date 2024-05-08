@@ -51,7 +51,10 @@ describe("User Controller", () => {
         email: "adriano@email.com"
       };
 
-      const response = await supertest.post("/register").send(data);
+      const response = await supertest
+        .post("/register")
+        .send(data)
+        .set("user-agent", `user-agent`);
 
       expect(response.status).toBe(StatusCodes.OK);
       expect(response.body).toEqual(expected);
@@ -75,7 +78,7 @@ describe("User Controller", () => {
       const response = await supertest.post("/register").send(data);
 
       expect(response.status).toBe(StatusCodes.BAD_REQUEST);
-      expect(response.body).toEqual(expected);
+      expect(response.body).toEqual(expect.objectContaining(expected));
     });
 
     it("should return status 400 when email already exists", async () => {
@@ -87,7 +90,10 @@ describe("User Controller", () => {
       const expected = "Unique constraint failed on the Email already exists";
 
       database.users = [UserApplication.create(data)];
-      const response = await supertest.post("/register").send(data);
+      const response = await supertest
+        .post("/register")
+        .send(data)
+        .set("user-agent", `user-agent`);
 
       expect(response.status).toBe(StatusCodes.BAD_REQUEST);
       expect(response.body).toEqual(expected);
@@ -103,7 +109,10 @@ describe("User Controller", () => {
         UserApplication.create(Object.assign(data, { name: "adriano" }))
       ];
 
-      const response = await supertest.post("/login").send(data);
+      const response = await supertest
+        .post("/login")
+        .send(data)
+        .set("user-agent", "myDeviceName");
 
       expect(response.status).toBe(StatusCodes.OK);
       expect(response.body.token).toBeDefined();
@@ -123,7 +132,10 @@ describe("User Controller", () => {
         }
       ];
 
-      const response = await supertest.post("/login").send(data);
+      const response = await supertest
+        .post("/login")
+        .send(data)
+        .set("user-agent", `user-agent`);
 
       expect(response.status).toBe(StatusCodes.BAD_REQUEST);
       expect(response.body).toEqual(expected);
@@ -135,7 +147,10 @@ describe("User Controller", () => {
         password: "12345679"
       };
 
-      const response = await supertest.post("/login").send(data);
+      const response = await supertest
+        .post("/login")
+        .send(data)
+        .set("user-agent", `user-agent`);
 
       expect(response.status).toBe(StatusCodes.UNAUTHORIZED);
       expect(response.body).toEqual("User Unauthorized");
@@ -155,7 +170,10 @@ describe("User Controller", () => {
           })
         )
       ];
-      const response = await supertest.post("/login").send(data);
+      const response = await supertest
+        .post("/login")
+        .send(data)
+        .set("user-agent", `user-agent`);
 
       expect(response.status).toBe(StatusCodes.UNAUTHORIZED);
       expect(response.body).toEqual("User Unauthorized");

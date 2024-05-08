@@ -5,6 +5,7 @@ type SessionDatabase = {
   refreshToken: string;
   expires: Date;
   createdAt: Date;
+  userAgent: string;
   active: boolean;
 };
 
@@ -14,6 +15,7 @@ export class SessionApplication {
     public readonly token: string,
     public readonly refreshToken: string,
     public readonly expires: Date,
+    public readonly userAgent: string,
     private readonly active: boolean
   ) {}
 
@@ -31,6 +33,7 @@ export class SessionApplication {
       session.token,
       session.refreshToken,
       session.expires,
+      session.userAgent,
       session.active
     );
   }

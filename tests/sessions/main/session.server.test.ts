@@ -75,6 +75,7 @@ describe("Session Controller", () => {
           refreshToken: "refreshToken",
           createdAt: new Date(),
           active: true,
+          userAgent: "user-agent",
           expires: new Date(Date.now() + 1000 * 60 * 60 * 24)
         })
       ];

@@ -12,7 +12,8 @@ export class VerifySessionRepository implements VerifySessionUseCase {
   constructor(@inject(SessionDatabase) private readonly db: SessionDatabase) {}
 
   async verifySession(
-    token: string
+    token: string,
+    userAgent: string
   ): Promise<
     Either<
       InternalServerError | InvalidTokenError | ExpiredTokenError,
@@ -20,7 +21,7 @@ export class VerifySessionRepository implements VerifySessionUseCase {
     >
   > {
     try {
-      const session = await this.db.findSession(token);
+      const session = await this.db.findSession(token, userAgent);
 
       if (!session) {
         return left(new InvalidTokenError());
